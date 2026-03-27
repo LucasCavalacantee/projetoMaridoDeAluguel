@@ -1,59 +1,71 @@
 #include<iostream>
 using namespace std;
+#define TAM 10
 
 class Pessoa{
     string nome;
-    string cpf;
     string telefone;
-    string email;
 
     public:
-    Pessoa(string nome, string cpf, string telefone, string email){
-        this->nome = nome; 
-        this->cpf = cpf;
-        this->telefone = telefone;
-        this->email = email;
-    }
+    Pessoa(string nome, string telefone);
 
+    void imprime();
 };
 
-void Pessoa 
-class habilidade{
-    string nomeHabilidade;
-    string descriçãoHabilidade;
+Pessoa:: Pessoa(string nome, string telefone){
+    this->nome = nome;
+    this->telefone = telefone;
+}
 
-    public:
-    habilidade(string nome, string descrição){
-        this->nomeHabilidade = nome;
-        this->descriçãoHabilidade = descrição;
-    }
+void Pessoa:: imprime(){
+    cout<<nome<<", "<<telefone<<endl;
+}
 
-};
-
-class prestadorServiço : Pessoa{
+class empregado : Pessoa{
     double valorHora;
-
+    string habilidade;
+    
     public:
-    prestadorServiço(string nome, string cpf, string telefone, string email, double valorHora) : Pessoa(nome, cpf, telefone, email){
+    empregado(string nome, string telefone, string habilidade, double valorHora) : Pessoa(nome, telefone){
         this->valorHora = valorHora;
+        this->habilidade = habilidade;
     }
-
-
+    
+    void imprime(){
+        Pessoa:: imprime();
+        cout<<habilidade<<", "<<valorHora<<endl;
+    }
 };
 
 class cliente : Pessoa{
-    string escolha;
+    string escolhaPrestador;
+    
+    public:
+    cliente(string nome, string telefone, string escolhaPrestador) : Pessoa(nome, telefone){
+        this->escolhaPrestador = escolhaPrestador;
+    }
+    
+    void imprime(){
+        Pessoa:: imprime();
+        cout<<"Escolheu o prestador: "<<escolhaPrestador;
+    }
+};
+
+class colecaoEmpregado{
+    empregado empregados[TAM];
 
     public:
-    cliente(string nome, string cpf, string telefone, string email, string escolha) : Pessoa(nome, cpf, telefone, email){
-        this->escolha = escolha;
-    }
-
 
 };
 
 int main(){
+    cout<<"Prestador: "<<endl;
+    empregado a1("Lucas", "69993352047", "Engenheiro", 100.0);
+    a1.imprime();
 
-
+    cout<<endl;
+    cout<<"Cliente: "<<endl;
+    cliente b1("jorge", "4588865632", "Lucas");
+    b1.imprime();
     return 0;
 }
