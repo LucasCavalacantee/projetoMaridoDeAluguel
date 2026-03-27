@@ -1,0 +1,21 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: g++ arquivo de build ativo",
+            "command": "mkdir -p ${workspaceFolder}/build && /usr/bin/g++ -fdiagnostics-color=always -g ${file} -o ${workspaceFolder}/build/${fileBasenameNoExtension}",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Tarefa gerada pelo Depurador."
+        }
+    ],
+    "version": "2.0.0"
+}

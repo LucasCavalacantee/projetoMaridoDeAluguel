@@ -1,0 +1,11 @@
+# Build artifacts
+/build/
+
+# Common compiled objects/binaries
+*.o
+*.obj
+*.out
+*.exe
+
+# OS/editor noise
+.DS_Store
