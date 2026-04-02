@@ -1,8 +1,9 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 struct Data{
-    int dia, mes, ano;
+    int dia = 0, mes = 0, ano = 0;
 };
 
 bool operator==(Data a, Data b){
@@ -21,6 +22,10 @@ class Pessoa{
     Pessoa(string nome, string telefone);
 
     void imprime();
+
+    string getNome(){
+        return this->nome;
+    }
 };
 
 Pessoa:: Pessoa(string nome, string telefone){
@@ -32,25 +37,23 @@ void Pessoa:: imprime(){
     cout<<nome<<", "<<telefone<<endl;
 }
 
-class Trabalhador : Pessoa{
+class Trabalhador : public Pessoa{
     double valorHora;
     string habilidade;
-    bool disponivel;
     Data especifica;
-    
+
     public:
     Trabalhador *proximo;
-    Trabalhador(string nome, string telefone, string habilidade, double valorHora, bool disponivel, Data especifica) : Pessoa(nome, telefone){
+    Trabalhador(string nome, string telefone, string habilidade, double valorHora, Data especifica) : Pessoa(nome, telefone){
         this->valorHora = valorHora;
-        this->habilidade = habilidade;
-        this->disponivel = disponivel;
+        this->habilidade  = habilidade;
         this->especifica = especifica;
         proximo = NULL;
     }
 
     void imprime(){
         Pessoa:: imprime();
-        cout<<habilidade<<", "<<valorHora<<endl;
+        cout<< "Habilidade: "<<habilidade<<endl<<"Valor hora: " <<valorHora;
     }
 
     Data getData(){
@@ -58,23 +61,19 @@ class Trabalhador : Pessoa{
     }
 };
 
-class Cliente : Pessoa{
-    string servico;
-    string escolhaPrestador;
+class Cliente : public Pessoa{
+    string escolhaServico = NULL;
     Data diaServico;
     
     public:
     Cliente *proximo;
-    Cliente(string nome, string telefone, string escolhaPrestador, Data diaServico, string servico) : Pessoa(nome, telefone){
-        this->escolhaPrestador = escolhaPrestador;
-        this->diaServico = diaServico;
-        this->servico = servico;
+    Cliente(string nome, string telefone) : Pessoa(nome, telefone){
         proximo = NULL;
     }
 
     void imprime(){
         Pessoa:: imprime();
-        cout<<"Escolheu o prestador: "<<escolhaPrestador;
+        cout<<"Escolheu o serviço: "<<escolhaServico;
     }
 
     void contratarTrabalhador(Trabalhador a1, Data tal){
@@ -85,7 +84,6 @@ class Cliente : Pessoa{
             cout<<"Trabalhador não esta disponivel nesse dia";
         }
     }
-
 };
 
 class colecaoTrabalhador{
@@ -94,6 +92,14 @@ class colecaoTrabalhador{
     public:
         void iniciaLista(colecaoTrabalhador &lista){
             lista.inicio = NULL;
+        }
+
+        bool listavazia(colecaoTrabalhador &lista){
+            if(lista.inicio == NULL){
+                return false;
+            } else {
+                return true;
+            }
         }
 
         void adicionaTrabalhador(colecaoTrabalhador &lista, Trabalhador emp) { //Final da lista
@@ -114,9 +120,22 @@ class colecaoTrabalhador{
             nav->proximo = novo;
         }
 
+        bool buscaCliente(colecaoTrabalhador &lista, string escolha){
+            Trabalhador *nav = lista.inicio;
+
+            while(nav != NULL){
+                if(nav->getNome() == escolha){
+                    return true;
+                } else {
+                    return false;
+                }
+                nav = nav->proximo;
+            }
+        }
+
         void imprimir(colecaoTrabalhador lista){
             if(lista.inicio == NULL){
-                cout<<"Lista vazia";
+                cout<<"Lista vazia"<<endl;
                 return;
             }
 
@@ -125,7 +144,7 @@ class colecaoTrabalhador{
             Trabalhador *nav = lista.inicio;
             while(nav != NULL){
                 nav->imprime();
-                cout<<"--------"<<endl;
+                cout<<endl<<"--------"<<endl;
                 nav = nav->proximo;
             }
         }
@@ -139,7 +158,15 @@ class colecaoClientes{
             lista.inicio = NULL;
         }
 
-        void adicionaTrabalhador(colecaoClientes &lista, Cliente cli) { //Final da lista
+        bool listavazia(colecaoClientes &lista){
+            if(lista.inicio == NULL){
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        void adicionarCliente(colecaoClientes &lista, Cliente cli) { //Final da lista
             Cliente *novo = new Cliente(cli);
 
             *novo = cli;
@@ -157,9 +184,24 @@ class colecaoClientes{
             nav->proximo = novo;
         }
 
+        
+        bool buscaCliente(colecaoClientes &lista, string escolha){
+            Cliente *nav = lista.inicio;
+
+            while(nav != NULL){
+                if(nav->getNome() == escolha){
+                    return true;
+                } else {
+                    return false;
+                }
+                nav = nav->proximo;
+            }
+        }
+        
+
         void imprimir(colecaoClientes lista){
             if(lista.inicio == NULL){
-                cout<<"Lista vazia";
+                cout<<"Lista vazia"<<endl;
                 return;
             }
 
@@ -168,7 +210,7 @@ class colecaoClientes{
             Cliente *nav = lista.inicio;
             while(nav != NULL){
                 nav->imprime();
-                cout<<"--------"<<endl;
+                cout<<endl<<"--------"<<endl;
                 nav = nav->proximo;
             }
         }
