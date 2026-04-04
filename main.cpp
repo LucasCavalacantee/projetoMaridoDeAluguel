@@ -1,7 +1,6 @@
 #include<iostream>
 #include <unistd.h>
 #include "class.hpp"
-#include "dataOperacao.hpp"
 using namespace std;
 
 
@@ -32,19 +31,7 @@ O que falta:
 
 */
 
-int main(){
-    int opcao;
-    colecaoTrabalhador listaTrabalhador;
-    colecaoClientes listaClientes;
-    colecaoServico servicos;
-    colecaoPedidos pedidos;
-
-
-    listaTrabalhador.iniciaLista(listaTrabalhador);
-    listaClientes.iniciaLista(listaClientes);
-    servicos.iniciaLista(servicos);
-    pedidos.iniciaLista(pedidos);
-
+void Sistema(int opcao, colecaoTrabalhador &listaTrabalhador, colecaoClientes &listaClientes, colecaoPedidos &pedidos){
     do{
         system("clear");
         cout<<"Menu de opções"<<endl;
@@ -68,12 +55,22 @@ int main(){
             cout<<"Digite informações sobre o novo trabalhador abaixo"<<endl<<endl;
             cout<<"Nome: "; cin>>nomeT;
             cout<<"Telefone: "; cin>>telefoneT;
-            cout<<"Digite as habilidades que ele vai ter: "; cin>>habilidade;
+            cout<<"Serviço que esse trabalhador oferece: "; cin>>habilidade;
             cout<<"Valor da hora desse trabalhador: "; cin>>valorHora;
             cout<<"Dia que este trabalhador estara disponivel: ((d m aa))"; cin>>dataEscolhida;
 
             Trabalhador novo(nomeT, telefoneT, habilidade, valorHora, dataEscolhida);
-            listaTrabalhador.adicionaTrabalhador(listaTrabalhador, novo);
+            if(listaTrabalhador.adicionaTrabalhador(listaTrabalhador, novo) == true){
+                string sair;
+                cout<<"Trabalhador cadastrado com sucesso!"<<endl;
+                cout<<"Digite qualquer tecla e pressione ENTER para voltar ao menu: ";
+                cin>>sair;
+            } else{
+                string sair;
+                cout<<"Algo de errado aconteceu"<<endl;
+                cout<<"Digite qualquer tecla e pressione ENTER para voltar ao menu: ";
+                cin>>sair;
+            }
         }
             break; 
         case 2:{ //Pagina do trabalhador
@@ -84,30 +81,16 @@ int main(){
                 cout<<"Clique em qualquer tecla e pressione ENTER para sair";
                 cin>>sair;
             } else {
-                string trabalhadorEscolhido;
-                cout<<"Digite o nome do trabalhador que fará a operação:";
-                cin>>trabalhadorEscolhido;
-                if(listaTrabalhador.buscaTrabalhador(listaTrabalhador, trabalhadorEscolhido) == true){
-                    string tipoServico;
-                    Data dataInicio;
-                    string duracaoEstimada;
-                    string valorServico;
-                    string status = "ABERTO";
-                    string clienteEscolhido;
-
-                   cout<<"Crie um serviço abaixo: "<<endl<<endl;
-                   cout<<"Tipo do serviço: "; getline(cin, tipoServico);
-                   cout<<"Data de inicio do servico: "; cin>>dataInicio;
-                   cout<<"Duração estimada do serviço: (em dias) "; getline(cin, duracaoEstimada);
-                   cout<<"Valor a ser pago(R$): "; cin>>valorServico;
-            
-                   Servico servico(trabalhadorEscolhido, tipoServico, dataInicio, duracaoEstimada, valorServico, status);
-                   servicos.adicionarServico(servicos, servico);
-
-                    cout<<"Cadastre um serviço paraa este trabalhador abaixo: "<<endl<<endl;
-
+                if(pedidos.listavazia(pedidos) == true){
+                    string sair;
+                    cout<<"Lista vazia! Não há pedidos para este trabalhador no momento."<<endl<<endl;
+                    cout<<"Clique em qualquer tecla e pressione ENTER para sair";
+                    cin>>sair;
                 } else {
-                    cout<<"Esse trabalhador não existe";
+                    string sair;
+                    pedidos.imprimirPedidos(pedidos);
+                    cout<<"Clique em qualquer tecla e pressione ENTER para sair";
+                    cin>>sair;
                 }
             }
             //Trabalhador consegue visualizar pedidos apenas feitos para ele
@@ -133,7 +116,10 @@ int main(){
                 cout<<"Digite qualquer tecla e pressione ENTER para voltar ao menu: ";
                 cin>>sair;
             } else {
-                cout<<"Algo de errado aconteceu";
+                string sair;
+                cout<<"Algo de errado aconteceu"<<endl;
+                cout<<"Digite qualquer tecla e pressione ENTER para voltar ao menu: ";
+                cin>>sair;
             }
         }
             break;
@@ -168,6 +154,9 @@ int main(){
                             cin>>contratarTrabalhador;
                             string sair;
                             //Verifica se trabalhador existe
+                            
+                            tr = listaTrabalhador.recebeTrabalhador(listaTrabalhador, contratarTrabalhador);
+
                             if(listaTrabalhador.buscaTrabalhador(listaTrabalhador, contratarTrabalhador) == true){
                                 cout<<"Para quando voce precisa do servico dele?(d m aa)"<<endl; 
                                 cin>>datapedido;
@@ -180,7 +169,6 @@ int main(){
                                     cout<<"Clique em qualquer tecla e pressione ENTER para sair";
                                     cin>>sair;
                                 } else{
-
                                     cout<<"Trabalhador esta indisponivel nesse dia";
                                     cout<<"Clique em qualquer tecla e pressione ENTER para sair";
                                     cin>>sair;
@@ -203,7 +191,10 @@ int main(){
                         break;
                     }
                 } else {
+                    string sair;
                     cout<<"Esse cliente não existe";
+                    cout<<"Clique em qualquer tecla e pressione ENTER para sair";
+                    cin>>sair;
                 }
             }
             //Cliente precisa cadastrar um serviço
@@ -237,6 +228,20 @@ int main(){
     }
 
     } while(opcao != 0);
+}
+
+int main(){
+    int opcao;
+    colecaoTrabalhador listaTrabalhador;
+    colecaoClientes listaClientes;
+    colecaoPedidos pedidos;
+
+
+    listaTrabalhador.iniciaLista(listaTrabalhador);
+    listaClientes.iniciaLista(listaClientes);
+    pedidos.iniciaLista(pedidos);
+
+    Sistema(opcao, listaTrabalhador, listaClientes, pedidos);
 
     return 0;
 }

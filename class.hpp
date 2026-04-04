@@ -1,6 +1,27 @@
 #include <iostream>
 using namespace std;
 
+struct Data{
+    int dia = 0, mes = 0, ano = 0;
+};
+
+inline ostream& operator<<(ostream &on, Data &data){
+    on << data.dia <<"/"<< data.mes <<"/"<< data.ano;
+    return on;
+}
+
+bool operator==(Data a, Data b){
+    if(a.dia == b.dia && a.mes == b.mes && a.ano == b.ano){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+inline istream& operator>>(istream &in, Data &data){
+    in >> data.dia >> data.mes >> data.ano;
+    return in;
+}
 
 class Pessoa{
     string nome;
@@ -23,7 +44,8 @@ Pessoa:: Pessoa(string nome, string telefone){
 }
 
 void Pessoa:: imprime(){
-    cout<<nome<<", "<<telefone<<endl;
+    cout<<"Nome: "<<nome<<endl;
+    cout<<"Telefone: "<<telefone<<endl;
 }
 
 class Trabalhador : public Pessoa{
@@ -49,43 +71,13 @@ class Trabalhador : public Pessoa{
 
     void imprime(){
         Pessoa:: imprime();
-        cout<< "Habilidade: "<<habilidade<<endl<<"Valor hora: " <<valorHora;
+        cout<< "Habilidade: "<<habilidade<<endl;
+        cout<<"Valor hora: " <<valorHora<<endl;
+        cout<<"Dia que esta disponivel: " <<especifica<<endl;
     }
 
     Data getData(){
         return this->especifica;
-    }
-};
-
-class Cliente : public Pessoa{
-    string escolhaServico = "";
-    Data diaServico;
-    
-    public:
-    Cliente *proximo = NULL;
-
-    Cliente() = default;
-
-    Cliente(string nome, string telefone) : Pessoa(nome, telefone){
-        proximo = NULL;
-    }
-
-    Cliente getCliente(){
-        return *this;
-    } 
-
-    void imprime(){
-        Pessoa:: imprime();
-        cout<<"Escolheu o serviço: "<<escolhaServico;
-    }
-
-    bool contratarTrabalhador(Trabalhador a1, Data tal){
-        Data dataTrabalhador = a1.getData();
-        if(dataTrabalhador == tal){
-            return true;
-        } else {
-            return false;
-        }
     }
 };
 
@@ -102,13 +94,13 @@ class colecaoTrabalhador{
             return lista.inicio == NULL;
         }
 
-        void adicionaTrabalhador(colecaoTrabalhador &lista, Trabalhador emp) { //Final da lista
+        bool adicionaTrabalhador(colecaoTrabalhador &lista, Trabalhador emp) { //Final da lista
             Trabalhador *novo = new Trabalhador(emp);
             novo->proximo = NULL;
 
             if(lista.inicio == NULL){
                 lista.inicio = novo;
-                return;
+                return true;
             } 
 
             Trabalhador *nav = lista.inicio;
@@ -116,15 +108,15 @@ class colecaoTrabalhador{
                 nav = nav->proximo; //funciona como se fosse um i++, serve para avançar a lista
             }
             nav->proximo = novo;
+            return true;
         }
 
         Trabalhador recebeTrabalhador(colecaoTrabalhador &lista, string escolha){
             Trabalhador *nav = lista.inicio;
-            Trabalhador novo;
 
             while(nav != NULL){
                 if(nav->getNome() == escolha){
-                    return novo;
+                    return nav->getTrabalhador();
                 }
                 nav = nav->proximo;
             }
@@ -132,7 +124,6 @@ class colecaoTrabalhador{
         
         bool buscaTrabalhador(colecaoTrabalhador &lista, string escolha){
             Trabalhador *nav = lista.inicio;
-            Trabalhador novo;
 
             while(nav != NULL){
                 if(nav->getNome() == escolha){
@@ -142,6 +133,7 @@ class colecaoTrabalhador{
             }
             return false; //checar essa linha
         }
+
         void imprimir(colecaoTrabalhador lista){
             if(lista.inicio == NULL){
                 cout<<"Lista vazia"<<endl;
@@ -157,6 +149,35 @@ class colecaoTrabalhador{
                 nav = nav->proximo;
             }
         }
+};
+
+class Cliente : public Pessoa{
+    
+    public:
+    Cliente *proximo = NULL;
+
+    Cliente() = default;
+
+    Cliente(string nome, string telefone) : Pessoa(nome, telefone){
+        proximo = NULL;
+    }
+
+    Cliente getCliente(){
+        return *this;
+    } 
+
+    void imprime(){
+        Pessoa:: imprime();
+    }
+
+    bool contratarTrabalhador(Trabalhador a1, Data tal){
+        Data dataTrabalhador = a1.getData();
+        if(tal == dataTrabalhador){
+            return true;
+        } else {
+            return false;
+        }
+    }
 };
 
 class colecaoClientes{
@@ -224,91 +245,22 @@ class colecaoClientes{
    
 };
 
-class Servico {
-    string tipoServico;
-    Data dataInicio;
-    string duracaoEstimada;
-    string valorServico;
-    string trabalhadorResponsavel;
-
-    public:
-        Servico *proximo;
-        Servico() = default;
-
-        Servico(string trabalhadorResponsavel, string tipoServico, Data dataInicio, string duracaoEstimada, string valorServico, string status){
-            this->trabalhadorResponsavel = trabalhadorResponsavel;
-            this->tipoServico = tipoServico;
-            this->dataInicio = dataInicio;
-            this->duracaoEstimada = duracaoEstimada;
-            this->valorServico = valorServico;       
-        }
-    
-        void imprimirServico(){
-            cout<<"Tipo do serviço: "<<tipoServico<<endl;
-            cout<<"Data de inicio do servico: "<<dataInicio<<endl;
-            cout<<"Duração estimada do serviço (em dias): "<<duracaoEstimada<<endl;
-            cout<<"Valor a ser pago(R$): "<<valorServico<<endl;
-        }
-
-};
-
-class colecaoServico{
-    Servico *inicio;
-
-    public:
-        void iniciaLista(colecaoServico &lista){
-            lista.inicio = NULL;
-        }
-
-        void adicionarServico(colecaoServico &lista, Servico serv){
-            Servico *novo = new Servico(serv);
-
-            *novo = serv;
-            novo->proximo = NULL;
-
-            if(lista.inicio == NULL){
-                lista.inicio = novo;
-                return;
-            } 
-
-            Servico *nav = lista.inicio;
-            while(nav->proximo != NULL){
-                nav = nav->proximo; //funciona como se fosse um i++, serve para avançar a lista
-            }
-            nav->proximo = novo;
-        }
-
-        void imprimirServicos(colecaoServico lista){
-            if(lista.inicio == NULL){
-                cout<<"Lista vazia"<<endl;
-                return;
-            }
-
-            cout<<"Trabalhadores listados: "<<endl;
-
-            Servico *nav = lista.inicio;
-            while(nav != NULL){
-                nav->imprimirServico();
-                cout<<endl<<"--------"<<endl;
-                nav = nav->proximo;
-            }
-        }
-};
 
 class PedidosTrabalhador{
     string clientePedido;
     string trabalhadorRequisitado;
     Data dataPedido;
     string status;
-
+    
     public:
-        PedidosTrabalhador *proximo;
-        PedidosTrabalhador() = default;
-
-        PedidosTrabalhador(string trabalhadorRequisitado, string clientePedido, Data dataPedido, string status){
-            this->clientePedido = clientePedido;
-            this->trabalhadorRequisitado = trabalhadorRequisitado;
-            this->dataPedido = dataPedido;
+    PedidosTrabalhador *proximo;
+    PedidosTrabalhador() = default;
+    
+    PedidosTrabalhador(string trabalhadorRequisitado, string clientePedido, Data dataPedido, string status){
+        this->clientePedido = clientePedido;
+        this->trabalhadorRequisitado = trabalhadorRequisitado;
+        this->dataPedido = dataPedido;
+        
             this->status = status;
         }
 
@@ -326,6 +278,10 @@ class colecaoPedidos{
     public:
         void iniciaLista(colecaoPedidos &lista){
             lista.inicio = NULL;
+        }
+
+        bool listavazia(colecaoPedidos &lista){
+            return lista.inicio == NULL;
         }
 
         void adicionarPedidos(colecaoPedidos &lista, PedidosTrabalhador serv, string cliente){
@@ -381,5 +337,77 @@ class AgendaTrabalhador : Trabalhador{
         }
 
 };
+
+class Servico {
+            string tipoServico;
+            Data dataInicio;
+            string duracaoEstimada;
+            string valorServico;
+            string trabalhadorResponsavel;
+        
+            public:
+                Servico *proximo;
+                Servico() = default;
+        
+                Servico(string trabalhadorResponsavel, string tipoServico, Data dataInicio, string duracaoEstimada, string valorServico, string status){
+                    this->trabalhadorResponsavel = trabalhadorResponsavel;
+                    this->tipoServico = tipoServico;
+                    this->dataInicio = dataInicio;
+                    this->duracaoEstimada = duracaoEstimada;
+                    this->valorServico = valorServico;       
+                }
+            
+                void imprimirServico(){
+                    cout<<"Tipo do serviço: "<<tipoServico<<endl;
+                    cout<<"Data de inicio do servico: "<<dataInicio<<endl;
+                    cout<<"Duração estimada do serviço (em dias): "<<duracaoEstimada<<endl;
+                    cout<<"Valor a ser pago(R$): "<<valorServico<<endl;
+                }
+        
+        };
+        
+        class colecaoServico{
+            Servico *inicio;
+        
+            public:
+                void iniciaLista(colecaoServico &lista){
+                    lista.inicio = NULL;
+                }
+        
+                bool adicionarServico(colecaoServico &lista, Servico serv){
+                    Servico *novo = new Servico(serv);
+        
+                    *novo = serv;
+                    novo->proximo = NULL;
+        
+                    if(lista.inicio == NULL){
+                        lista.inicio = novo;
+                        return true;
+                    } 
+        
+                    Servico *nav = lista.inicio;
+                    while(nav->proximo != NULL){
+                        nav = nav->proximo; //funciona como se fosse um i++, serve para avançar a lista
+                    }
+                    nav->proximo = novo;
+                    return true;
+                }
+        
+                void imprimirServicos(colecaoServico lista){
+                    if(lista.inicio == NULL){
+                        cout<<"Lista vazia"<<endl;
+                        return;
+                    }
+        
+                    cout<<"Trabalhadores listados: "<<endl;
+        
+                    Servico *nav = lista.inicio;
+                    while(nav != NULL){
+                        nav->imprimirServico();
+                        cout<<endl<<"--------"<<endl;
+                        nav = nav->proximo;
+                    }
+                }
+        };
 
 */
